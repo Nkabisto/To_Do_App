@@ -62,13 +62,23 @@ app.post("/edit", async(req, res) => {
   const updatedItemTitle = req.body["updatedItemTitle"];
   try{
     const update =  await db.query("UPDATE items set title= $1 WHERE id = $2 RETURNING *",[updatedItemTitle,updatedItemId]);
+    console.log(update.rows[0]);
     res.redirect("/");
   }catch(err){
-    console.log("Database error:", err);
+    console.log("Failed to update item:", err);
   }
 });
 
-app.post("/delete", (req, res) => {});
+app.post("/delete", async(req, res) => {
+  const deleteItemId = req.body["deleteItemId"];
+  try{
+    const deleted = await db.query("DELETE FROM items WHERE id = $1 Returning *",[deleteItemId]);
+    console.log(deleted.rows[0]);
+    res.redirect("/");
+  }catch(err){
+    console.log("Failed to delete item:",err);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
